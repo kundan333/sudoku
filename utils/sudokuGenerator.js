@@ -37,27 +37,33 @@ class SudokuGenerator {
     generatePuzzle(difficulty = 'medium') {
         const completeBoard = this.generateCompleteBoard();
         const puzzle = completeBoard.map(row => [...row]);
-        
+
         const cellsToRemove = this.getDifficultyLevel(difficulty);
         let removed = 0;
-        
+
+        // For harder difficulties, skip the expensive unique solution check
+        // to speed up generation
+        const checkUniqueness = difficulty === 'easy' || difficulty === 'medium';
+
         while (removed < cellsToRemove) {
             const row = Math.floor(Math.random() * 9);
             const col = Math.floor(Math.random() * 9);
-            
+
             if (puzzle[row][col] !== 0) {
                 const backup = puzzle[row][col];
                 puzzle[row][col] = 0;
-                
-                // Ensure the puzzle still has a unique solution
-                if (this.hasUniqueSolution(puzzle)) {
+
+                // For easy/medium, ensure unique solution. For hard/expert, skip this check
+                if (!checkUniqueness) {
+                    removed++;
+                } else if (this.hasUniqueSolution(puzzle)) {
                     removed++;
                 } else {
                     puzzle[row][col] = backup;
                 }
             }
         }
-        
+
         return {
             puzzle,
             solution: completeBoard,

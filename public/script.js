@@ -284,6 +284,9 @@ class SudokuGame {
     }
 
     startTimer() {
+        // Stop any existing timer first to prevent multiple intervals
+        this.stopTimer();
+
         this.timer = 0;
         this.updateTimerDisplay();
         this.timerInterval = setInterval(() => {
